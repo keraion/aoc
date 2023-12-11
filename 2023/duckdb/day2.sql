@@ -1,8 +1,8 @@
 with game_rounds as (
     select
-        string_split_regex(input_row, ': ')[1] as game,
+        string_split(input_row, ': ')[1] as game,
         unnest(
-            string_split_regex(string_split_regex(input_row, ': ')[2], ';')
+            string_split(string_split(input_row, ': ')[2], ';')
         ) as round_output
     from
         read_csv('2023/day2.txt', columns = { 'input_row': 'VARCHAR' }, delim = '~')
@@ -11,7 +11,7 @@ with game_rounds as (
 game_round_colors as (
     select
         *,
-        trim(unnest(string_split_regex(round_output, ', '))) as color_outputs
+        trim(unnest(string_split(round_output, ', '))) as color_outputs
     from game_rounds
 ),
 
