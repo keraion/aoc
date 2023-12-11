@@ -1,6 +1,6 @@
 import polars as pl
 
-df = pl.read_csv("2023/day1.txt", has_header=False, separator=":")
+df = pl.read_csv("2023/day01.txt", has_header=False, separator=":")
 
 rev_str_expr = pl.col("column_1").str.split("").list.reverse().list.join("")
 

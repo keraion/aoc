@@ -5,7 +5,7 @@ with game_rounds as (
             string_split(string_split(input_row, ': ')[2], ';')
         ) as round_output
     from
-        read_csv('2023/day2.txt', columns = { 'input_row': 'VARCHAR' }, delim = '~')
+        read_csv('2023/day02.txt', columns = { 'input_row': 'VARCHAR' }, delim = '~')
 ),
 
 game_round_colors as (
