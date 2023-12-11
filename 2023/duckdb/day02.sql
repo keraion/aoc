@@ -1,68 +1,69 @@
-with game_rounds as (
-    select
-        string_split(input_row, ': ')[1] as game,
+WITH game_rounds AS (
+    SELECT
+        string_split(input_row, ': ')[1] AS game,
         unnest(
             string_split(string_split(input_row, ': ')[2], ';')
-        ) as round_output
-    from
-        read_csv('2023/day02.txt', columns = { 'input_row': 'VARCHAR' }, delim = '~')
+        ) AS round_output
+    FROM
+        read_csv(
+            '2023/day02.txt', columns = { 'input_row': 'VARCHAR' }, delim = '~'
+        )
 ),
 
-game_round_colors as (
-    select
+game_round_colors AS (
+    SELECT
         *,
-        trim(unnest(string_split(round_output, ', '))) as color_outputs
-    from game_rounds
+        trim(unnest(string_split(round_output, ', '))) AS color_outputs
+    FROM game_rounds
 ),
 
-game_round_color_info as (
-    select
+game_round_color_info AS (
+    SELECT
         *,
-        string_split_regex(color_outputs, '\s+')[1]::int as color_amount,
-        string_split_regex(color_outputs, '\s+')[2] as color_type
-    from game_round_colors
+        string_split_regex(color_outputs, '\s+')[1]::int AS color_amount,
+        string_split_regex(color_outputs, '\s+')[2] AS color_type
+    FROM game_round_colors
 ),
 
-impossible_games as (
-    select regexp_extract(game, '\d+')::int as game_int
-    from game_round_color_info
+impossible_games AS (
+    SELECT regexp_extract(game, '\d+')::int AS game_int
+    FROM game_round_color_info
 
-    except
+    EXCEPT
 
-    select regexp_extract(game, '\d+')::int
-    from game_round_color_info
-    where
-        (color_type = 'red' and color_amount > 12)
-        or (color_type = 'green' and color_amount > 13)
-        or (color_type = 'blue' and color_amount > 14)
+    SELECT regexp_extract(game, '\d+')::int
+    FROM game_round_color_info
+    WHERE
+        (color_type = 'red' AND color_amount > 12)
+        OR (color_type = 'green' AND color_amount > 13)
+        OR (color_type = 'blue' AND color_amount > 14)
 ),
 
-game_round_color_max as (
-    select
+game_round_color_max AS (
+    SELECT
         game,
         color_type,
-        max(color_amount) as color_amount
-    from game_round_color_info
-    group by all
+        max(color_amount) AS color_amount
+    FROM game_round_color_info
+    GROUP BY ALL
 ),
 
-game_round_max_product as (
-    select
+game_round_max_product AS (
+    SELECT
         game,
-        product(color_amount) as color_amount
-    from game_round_color_max
-    group by game
+        product(color_amount) AS color_amount
+    FROM game_round_color_max
+    GROUP BY game
 )
 
-select
-    'Part 1' as part,
-    sum(game_int)::int as answer
-from impossible_games
+SELECT
+    'Part 1' AS part,
+    sum(game_int)::int AS answer
+FROM impossible_games
 
-union all
+UNION ALL
 
-select
-    'Part 2',
-    sum(color_amount)::int
-from game_round_max_product
-;
+SELECT
+    'Part 2' AS part,
+    sum(color_amount)::int AS answer
+FROM game_round_max_product;
