@@ -6,7 +6,7 @@ def map_df_ranges(
     maps_df: pl.DataFrame | pl.LazyFrame,
     n: int,
 ):
-    map_splitter_df = (
+    return (
         source_map_df.join(
             pl.concat(
                 [
@@ -36,9 +36,23 @@ def map_df_ranges(
             )
             + 1,
         )
+        .pipe(map_melter)
+        .filter(
+            (
+                (pl.col("source_start_right") <= pl.col("value"))
+                & (pl.col("value") < pl.col("source_end_right"))
+            )
+        )
+        .select(
+            (pl.col("value") + pl.col("delta_right")).alias("source_start"),
+            (pl.col("value_end") + pl.col("delta_right")).alias("source_end"),
+            pl.lit(0).alias("delta"),
+        )
     )
 
-    melt_splitter_df = (
+
+def map_melter(map_splitter_df: pl.DataFrame | pl.LazyFrame):
+    return map_splitter_df.join(
         map_splitter_df.melt(
             ["source_start", "source_end", "delta_right"],
             ["source_start_right", "source_end_right"],
@@ -67,29 +81,10 @@ def map_df_ranges(
             .over("source_start", "source_end")
             .sub(1)
             .alias("value_end")
-        )
+        ),
+        on=["source_start", "source_end", "delta_right"],
+        how="inner",
     )
-
-    map_splitter_df = (
-        map_splitter_df.join(
-            melt_splitter_df,
-            on=["source_start", "source_end", "delta_right"],
-            how="inner",
-        )
-        .filter(
-            (
-                (pl.col("source_start_right") <= pl.col("value"))
-                & (pl.col("value") < pl.col("source_end_right"))
-            )
-        )
-        .select(
-            (pl.col("value") + pl.col("delta_right")).alias("source_start"),
-            (pl.col("value_end") + pl.col("delta_right")).alias("source_end"),
-            pl.lit(0).alias("delta"),
-        )
-    )
-
-    return map_splitter_df
 
 
 def left_join_range(df: pl.LazyFrame, lazy_maps_df: pl.LazyFrame, n):
@@ -110,41 +105,53 @@ def left_join_range(df: pl.LazyFrame, lazy_maps_df: pl.LazyFrame, n):
     )
 
 
-def part_01(seeds_df, maps_df):
-    part1_df = seeds_df.explode("seeds").select(
-        pl.col("seeds").alias("source_start"),
-        pl.col("seeds").alias("source_end"),
-        pl.lit(0).alias("delta"),
+def part_01(seeds_df: pl.DataFrame, maps_df: pl.DataFrame):
+    return (
+        seeds_df.explode("seeds")
+        .select(
+            pl.col("seeds").alias("source_start"),
+            pl.col("seeds").alias("source_end"),
+            pl.lit(0).alias("delta"),
+        )
+        # A range loop over could be used here but let's use pipe
+        .pipe(map_df_ranges, maps_df, 1)
+        .pipe(map_df_ranges, maps_df, 2)
+        .pipe(map_df_ranges, maps_df, 3)
+        .pipe(map_df_ranges, maps_df, 4)
+        .pipe(map_df_ranges, maps_df, 5)
+        .pipe(map_df_ranges, maps_df, 6)
+        .pipe(map_df_ranges, maps_df, 7)
+        .select("source_start").min()
     )
 
-    for n in range(7):
-        part1_df = map_df_ranges(part1_df, maps_df, n + 1)
 
-    return part1_df
-
-
-def part_02(seeds_df, maps_df):
-    part2_df = seeds_df.select(
-        pl.col("seeds").explode().gather_every(2).alias("source_start"),
-        (
-            pl.col("seeds").explode().gather_every(2)
-            + pl.col("seeds").list.slice(1).explode().gather_every(2)
-            - 1
-        ).alias("source_end"),
-        pl.lit(0).alias("delta"),
+def part_02(seeds_df: pl.DataFrame, maps_df: pl.DataFrame):
+    return (
+        seeds_df.select(
+            pl.col("seeds").explode().gather_every(2).alias("source_start"),
+            (
+                pl.col("seeds").explode().gather_every(2)
+                + pl.col("seeds").list.slice(1).explode().gather_every(2)
+                - 1
+            ).alias("source_end"),
+            pl.lit(0).alias("delta"),
+        )
+        .pipe(map_df_ranges, maps_df, 1)
+        .pipe(map_df_ranges, maps_df, 2)
+        .pipe(map_df_ranges, maps_df, 3)
+        .pipe(map_df_ranges, maps_df, 4)
+        .pipe(map_df_ranges, maps_df, 5)
+        .pipe(map_df_ranges, maps_df, 6)
+        .pipe(map_df_ranges, maps_df, 7)
+        .select("source_start").min()
     )
 
-    for n in range(7):
-        part2_df = map_df_ranges(part2_df, maps_df, n + 1)
 
-    return part2_df
+def part_01_bruteforce(seeds_df_in: pl.DataFrame, maps_df_in: pl.DataFrame):
+    lazy_maps_df = maps_df_in.sort("source_start").lazy()
 
-
-def part_01_bruteforce(seeds_df, maps_df):
-    lazy_maps_df = maps_df.sort("source_start").lazy()
-
-    part1_brute_df = (
-        seeds_df.lazy()
+    return (
+        seeds_df_in.lazy()
         .explode("seeds")
         .pipe(left_join_range, lazy_maps_df, 1)
         .pipe(left_join_range, lazy_maps_df, 2)
@@ -156,12 +163,10 @@ def part_01_bruteforce(seeds_df, maps_df):
         .min()
     ).collect(streaming=True)
 
-    return part1_brute_df
 
-
-def generate_map_df(input_df: pl.DataFrame):
-    maps_df = (
-        input_df.with_columns(
+def generate_map_df(df_in: pl.DataFrame):
+    return (
+        df_in.with_columns(
             pl.col("column_1").is_null().cum_sum().alias("map_set"),
             pl.col("column_1")
             .str.extract_all(r"\d+")
@@ -181,15 +186,8 @@ def generate_map_df(input_df: pl.DataFrame):
         )
     )
 
-    return maps_df
-
-
-if __name__ == "__main__":
-    cfg = pl.Config()
-    cfg.set_tbl_cols(25)
-    cfg.set_fmt_table_cell_list_len(25)
-
-    input_df = pl.read_csv("2023/day05.txt", has_header=False, separator="~")
+def main(input_filename):
+    input_df = pl.read_csv(input_filename, has_header=False, separator="~")
     seeds_df = input_df.filter(pl.col("column_1").str.starts_with("seeds:")).select(
         pl.col("column_1")
         .str.extract_all(r"\d+")
@@ -199,11 +197,11 @@ if __name__ == "__main__":
 
     maps_df = generate_map_df(input_df)
 
-    part1_brute_df = part_01_bruteforce(seeds_df, maps_df)
-    print("Part 1 Bruteforce:", part1_brute_df)
+    print("Part 1 Bruteforce:", part_01_bruteforce(seeds_df, maps_df))
+    print("Part 1:", part_01(seeds_df, maps_df))
+    print("Part 2:", part_02(seeds_df, maps_df))
 
-    part1_df = part_01(seeds_df, maps_df)
-    print("Part 1:", part1_df.select("source_start").min())
 
-    part2_df = part_02(seeds_df, maps_df)
-    print("Part 2:", part2_df.select("source_start").min())
+if __name__ == "__main__":
+    main("2023/day05_example.txt")
+    main("2023/day05.txt")
