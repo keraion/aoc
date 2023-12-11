@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE input as FROM read_csv('2023/day04.txt', columns = {'input_row': 'VARCHAR'}, delim ='~');
+CREATE OR REPLACE TABLE input as FROM read_csv('2023/input/day04.txt', columns = {'input_row': 'VARCHAR'}, delim ='~');
 
 CREATE OR REPLACE TABLE base AS
 SELECT

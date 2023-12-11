@@ -50,6 +50,10 @@ def map_df_ranges(
         )
     )
 
+def loop_map_df_ranges(
+        
+):
+    ...
 
 def map_melter(map_splitter_df: pl.DataFrame | pl.LazyFrame):
     return map_splitter_df.join(
@@ -114,7 +118,7 @@ def part_01(seeds_df: pl.DataFrame, maps_df: pl.DataFrame):
             pl.lit(0).alias("delta"),
         )
         # A range loop over could be used here but let's use pipe
-        .pipe(map_df_ranges, maps_df, 1)
+        .pipe(map_df_ranges, maps_df, 1, 7)
         .pipe(map_df_ranges, maps_df, 2)
         .pipe(map_df_ranges, maps_df, 3)
         .pipe(map_df_ranges, maps_df, 4)
@@ -204,4 +208,4 @@ def main(input_filename):
 
 if __name__ == "__main__":
     main("2023/day05_example.txt")
-    main("2023/day05.txt")
+    main("2023/input/day05.txt")

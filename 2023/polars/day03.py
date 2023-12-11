@@ -4,7 +4,7 @@ part_len_expr = pl.col("parts").str.len_bytes()
 pos_expr = part_len_expr.cum_sum() - part_len_expr
 
 df = (
-    pl.read_csv("2023/day03.txt", has_header=False, separator=":")
+    pl.read_csv("2023/input/day03.txt", has_header=False, separator=":")
     .with_row_count()
     .with_columns(
         pl.col("column_1").str.extract_all(r"\.+|\d+|[^.\d]").alias("parts"),

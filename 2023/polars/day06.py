@@ -1,7 +1,7 @@
 import polars as pl
 
 print(
-    pl.read_csv("2023/day06.txt", has_header=False, separator=":")
+    pl.read_csv("2023/input/day06.txt", has_header=False, separator=":")
     .select(
         pl.col("column_1").str.strip_chars(),
         pl.col("column_2").str.extract_all(r"\d+").cast(pl.List(pl.Int64)),

@@ -1,5 +1,5 @@
 CREATE OR REPLACE TABLE input AS
-from read_csv('2023/day09.txt', columns = {'input_row': 'VARCHAR'}, delim ='~')
+from read_csv('2023/input/day09.txt', columns = {'input_row': 'VARCHAR'}, delim ='~')
 ;
 
 CREATE OR REPLACE TABLE item_patterns AS

@@ -1,6 +1,6 @@
 import polars as pl
 
-df = pl.read_csv("2023/day04.txt", has_header=False, separator=":").with_columns(
+df = pl.read_csv("2023/input/day04.txt", has_header=False, separator=":").with_columns(
     pl.col("column_1").str.extract(r"(\d+)").cast(pl.Int64).alias("card_num"),
     pl.col("column_2")
     .str.split("|")

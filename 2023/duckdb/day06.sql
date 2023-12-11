@@ -12,7 +12,7 @@ WITH tabx AS (
         ) AS row_value
     FROM
         read_csv(
-            '2023/day06.txt', columns = { 'input_row': 'VARCHAR' }, delim = '~'
+            '2023/input/day06.txt', columns = { 'input_row': 'VARCHAR' }, delim = '~'
         )
 
     UNION ALL
@@ -40,7 +40,7 @@ WITH tabx AS (
         ) AS row_value
     FROM
         read_csv(
-            '2023/day06.txt', columns = { 'input_row': 'VARCHAR' }, delim = '~'
+            '2023/input/day06.txt', columns = { 'input_row': 'VARCHAR' }, delim = '~'
         )
 ),
 

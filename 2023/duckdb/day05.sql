@@ -1,5 +1,5 @@
 CREATE OR REPLACE TABLE input AS
-FROM read_csv('2023/day05.txt', columns = {'input_row': 'VARCHAR'}, delim ='~')
+FROM read_csv('2023/input/day05.txt', columns = {'input_row': 'VARCHAR'}, delim ='~')
 ;
 
 create or replace table seeds as

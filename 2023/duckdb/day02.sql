@@ -6,7 +6,7 @@ WITH game_rounds AS (
         ) AS round_output
     FROM
         read_csv(
-            '2023/day02.txt', columns = { 'input_row': 'VARCHAR' }, delim = '~'
+            '2023/input/day02.txt', columns = { 'input_row': 'VARCHAR' }, delim = '~'
         )
 ),
 

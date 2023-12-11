@@ -1,7 +1,7 @@
 import polars as pl
 
 df = (
-    pl.read_csv("2023/day02.txt", has_header=False, separator=":")
+    pl.read_csv("2023/input/day02.txt", has_header=False, separator=":")
     .with_columns(
         pl.col("column_2")
         .str.strip_chars()
@@ -19,6 +19,8 @@ df = (
     .explode("column_2")
     .unnest("column_2")
 )
+
+print(df)
 
 print(
     "Part 1:",

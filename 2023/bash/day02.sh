@@ -1,6 +1,6 @@
 #!/bin/bash
 
-grep -Eo "Game ([[:digit:]]+)|([[:digit:]]*) (red|green|blue)" 2023/day02.txt | awk '
+grep -Eo "Game ([[:digit:]]+)|([[:digit:]]*) (red|green|blue)" 2023/input/day02.txt | awk '
 BEGIN {part_1_answer = 0; part_2_answer = 0}
 $1 == "Game" {
     if(green_over == 0 && red_over == 0 && blue_over == 0) part_1_answer += game; 

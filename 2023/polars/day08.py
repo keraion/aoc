@@ -68,7 +68,7 @@ def part_2(step_df, map_df):
 
 def main():
     input_df = pl.read_csv(
-        "2023/day08.txt",
+        "2023/input/day08.txt",
         has_header=False,
         separator="~",
     )

@@ -1,5 +1,5 @@
 CREATE OR REPLACE TABLE input_file as 
-FROM read_csv('2023/day01.txt', columns = {'input_row': 'VARCHAR'}, delim ='~')
+FROM read_csv('2023/input/day01.txt', columns = {'input_row': 'VARCHAR'}, delim ='~')
 ;
 
 WITH tab_num AS (

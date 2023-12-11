@@ -1,5 +1,5 @@
 CREATE OR REPLACE TABLE input AS
-FROM read_csv('2023/day08.txt', columns = {'input_row': 'VARCHAR'}, delim ='~')
+FROM read_csv('2023/input/day08.txt', columns = {'input_row': 'VARCHAR'}, delim ='~')
 ;
 
 CREATE OR REPLACE TABLE steps AS 
