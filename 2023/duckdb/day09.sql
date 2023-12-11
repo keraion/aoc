@@ -69,14 +69,14 @@ WITH RECURSIVE subtractor AS (
 )
 
 SELECT
-    'Part 1' AS part_1,
+    'Part 1' AS part,
     sum(last_item) AS answer
 FROM item_patterns
 
 UNION ALL
 
 SELECT
-    'Part 2' AS part_1,
+    'Part 2' AS part,
     sum(diff) AS answer
 FROM subtractor
 WHERE n = 1;
